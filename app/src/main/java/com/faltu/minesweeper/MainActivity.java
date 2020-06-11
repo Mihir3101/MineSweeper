@@ -29,7 +29,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
+        b00=(Button)findViewById(R.id.b00);
+        b01=(Button)findViewById(R.id.b01);
+        b02=(Button)findViewById(R.id.b02);
+        b03=(Button)findViewById(R.id.b03);
         b10=(Button)findViewById(R.id.b10);
         b11=(Button)findViewById(R.id.b11);
         b12=(Button)findViewById(R.id.b12);
