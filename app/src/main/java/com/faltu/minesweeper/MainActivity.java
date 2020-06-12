@@ -7,27 +7,51 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int[] BUTTON_IDS = {
+            R.id.b00,
+            R.id.b01,
+            R.id.b02,
+            R.id.b03,
+            R.id.b10,
+            R.id.b11,
+            R.id.b12,
+            R.id.b13,
+            R.id.b20,
+            R.id.b21,
+            R.id.b22,
+            R.id.b23,
+            R.id.b30,
+            R.id.b31,
+            R.id.b32,
+            R.id.b33,
+
+    };
     Button b00,b01,b02,b03,b10,b11,b12,b13,b20,b21,b22,b23,b30,b31,b32,b33,b40,b41,b42,b43,reset;
     Button[][] buttonsArray=new Button[5][4];
     int n=5,m=4;
     int[][] matrix= new int[n][m];
+    int noOfBomb=5;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        for(int i=0;i<n;i++)
+        /*for(int i=0;i<n;i++)
         {
             for(int j=0;j<m;j++)
             {
                 String buttonId="b"+Integer.toString(i)+Integer.toString(j);
                 buttonsArray[i][j]=(Button)findViewById(R.id.buttonId);
             }
-        }
+        }*/
+
+
+
 
         b00=(Button)findViewById(R.id.b00);
         b01=(Button)findViewById(R.id.b01);
@@ -52,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
         reset=(Button)findViewById(R.id.reset);
 
-        creatematrix();
+        createMatrix();
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                creatematrix();
+                createMatrix();
                 resetButton();
             }
         });
@@ -120,21 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-/*        b04.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(matrix[0][4]!=-1)
-                {
-                    b04.setText(Integer.toString(matrix[0][4]));
-                    b04.setEnabled(false);
-                }
-                else
-                {
-                    LostGame();
-                }
-            }
-        });
-*/
         b10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -397,64 +406,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this,"You Lost the game",Toast.LENGTH_SHORT).show();
     }
 
-    private void creatematrix() {
+    private void createMatrix() {
 
-            Random rand=new Random();
-
-            for(int i=0;i<n;i++)
-            {
-                for(int j=0;j<m;j++)
-                {
-                    //initially matrix is -51
-                    //and Bomb is where matrix[i][j]=-1
-                    matrix[i][j]=-51;
-                }
-            }
-//	    Set<Pair<Integer,Integer>> row_rand=new HashSet<Pair<Integer,Integer>>();
-//	    Set<Pair<Integer,Integer>> col_rand=new HashSet<Pair<Integer,Integer>>();
-
-            //Code for Locating Bomb;
-            int noOfBomb=5;
-            int[] Bombi=new int[noOfBomb];
-            int[] Bombj=new int[noOfBomb];
-        Arrays.fill(Bombi, -1);
-
-            for(int i=0;i<noOfBomb;i++)
-            {
-                Bombj[i]=-1;
-                Bombi[i]=-1;
-            }
-            for(int i=0;i<noOfBomb;i++)
-            {
-                int flag=1;
-                int a=rand.nextInt(n);
-                int b=rand.nextInt(m);
-                for(int j=0;j<noOfBomb;j++)
-                {
-                    if(Bombi[j]==a&&Bombj[j]==b)
-                    {
-                        i--;
-                        flag=0;
-                        break;
-                    }
-                }
-                if(flag==1)
-                {
-                    Bombi[i]=a;
-                    Bombj[i]=b;
-                    matrix[a][b]=-1;
-                }
-            }
-            for(int i=0;i<noOfBomb;i++)
-            {
-                System.out.println(Bombi[i]+"  "+Bombj[i]);
-            }
-
+        for(int i=0;i<n;i++)
+        {
+            Arrays.fill(matrix[i],-51);
+        }
+        placeBombs();
             //Bomb is placed in matrix where matrix[i][j]=-1 && for matrix[i][j]=-51 it is empty
 
 
             //Code for locating no in the matrix;
-
             for(int i=0;i<n;i++)
             {
                 for(int j=0;j<m;j++)
@@ -466,26 +428,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        int[] box={0,1,-1};
-                        int count=0;
-                        for(int x=0;x<3;x++)
-                        {
-                            for(int y=0;y<3;y++)
-                            {
-                                if(box[x]==0&&box[y]==0)
-                                {
-                                    continue;
-                                }
-                                if((i+box[x]>-1&&j+box[y]>-1)&&(i+box[x]<n&&j+box[y]<m))
-                                {
-                                    if(matrix[i+box[x]][j+box[y]]==-1)
-                                    {
-                                        count++;
-                                    }
-                                }
-                            }
-                        }
-                        matrix[i][j]=count;
+                        matrix[i][j]=noOfBombsAround(i,j);
                         System.out.print(matrix[i][j]);
                     }
                 }
@@ -493,4 +436,83 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
+    private void placeBombs() {
+        Random rand=new Random();
+            /*for(int i=0;i<n;i++)
+            {
+                for(int j=0;j<m;j++)
+                {
+                    //initially matrix is -51
+                    //and Bomb is where matrix[i][j]=-1
+                    matrix[i][j]=-51;
+                }
+            }*/
+        //Code for Locating Bomb;
+        int[] Bombi=new int[noOfBomb];
+        int[] Bombj=new int[noOfBomb];
+        Arrays.fill(Bombi, -1);
+        /*for(int i=0;i<noOfBomb;i++)
+        {
+            Bombj[i]=-1;
+            Bombi[i]=-1;
+        }*/
+        for(int i=0;i<noOfBomb;i++)
+        {
+            int flag=1;
+            int a=rand.nextInt(n);
+            int b=rand.nextInt(m);
+            for(int j=0;j<noOfBomb;j++)
+            {
+                if(Bombi[j]==a&&Bombj[j]==b)
+                {
+                    i--;
+                    flag=0;
+                    break;
+                }
+            }
+            if(flag==1)
+            {
+                Bombi[i]=a;
+                Bombj[i]=b;
+                matrix[a][b]=-1;
+            }
+        }
+        //debugging the position of bombs.
+        for(int i=0;i<noOfBomb;i++)
+        {
+            System.out.println(Bombi[i]+"  "+Bombj[i]);
+        }
+    }
+
+    private int noOfBombsAround(int i, int j) {
+        int[] box={0,1,-1};
+        int count=0;
+        for(int x=0;x<3;x++)
+        {
+            for(int y=0;y<3;y++)
+            {
+                if(box[x]==0&&box[y]==0)
+                {
+                    continue;
+                }
+                if(isSafe(i+box[x],j+box[y]))
+                {
+                    if(matrix[i+box[x]][j+box[y]]==-1)
+                    {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean isSafe(int i,int j) {
+        if(i>0&&j>0&&i<n&&j<m)
+        {
+            return true;
+        }
+        return false;
+
+    }
 }

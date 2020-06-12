@@ -7,7 +7,8 @@
     tools:context=".MainActivity"
     app:columnCount="5"
     app:rowCount="10"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:numColumns="5">
 
     <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
@@ -16,7 +17,8 @@
         tools:layout_editor_absoluteY="1dp"
         tools:ignore="MissingConstraints"
         android:layout_rowWeight="1"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:numColumns="5">
         <Button
             android:id="@+id/b00"
             android:layout_width="wrap_content"
